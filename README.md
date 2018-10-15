@@ -13,4 +13,7 @@ The notes I took from his courses, added the Latex formulas and code snippets in
 
 - pml_sr are the notebooks and code from Sebastian Raschka's excellent Python Machine Learning book with added text and notes for my own learning process. 
 
+- ml_models is code for various ml models for practising purposes.
+
+
 
