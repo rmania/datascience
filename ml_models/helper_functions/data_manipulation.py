@@ -9,6 +9,8 @@ import sys
 def normalize(X, axis=-1, order=2):
     """
     Normalize the dataset X
+    Normalization makes training less sensitive to the scale of features, 
+    so we can better solve for coefficients.
     """
     ## atleast_1d --> inputs to arrays with at least one dimension
     ## np.linalg.norm --> Vector or matrix norm
@@ -19,7 +21,9 @@ def normalize(X, axis=-1, order=2):
 
 def standardize(X):
     """
-    Standardize the dataset X
+    Standardize the dataset X so that mean = 0, sd = 1. Will center features 
+    around around their means. This tends to make the training process 
+    well behaved because numerical condition of the optimization problems is improved.
     """
     X_std = X
     mean = X.mean(axis=0)

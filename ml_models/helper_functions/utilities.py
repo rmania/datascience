@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def check_valid_array(X, y, y_int=True):
 
@@ -28,3 +29,33 @@ def check_valid_array(X, y, y_int=True):
         raise ValueError('y and X must contain the same number of samples. '
                          'Got y: %d, X: %d' % (y.shape[0], X.shape[0]))
 
+
+## Plotting utility functions 
+        
+def remove_borders(ax, left=False, bottom=False, right=True, top=True):
+    """Remove chart junk from matplotlib plots.
+    Parameters
+    ----------
+    axes : fi. plt.subplots()
+    left : bool (default: `False`)
+        Hide left axis spine if True.
+    bottom : bool (default: `False`)
+        Hide bottom axis spine if True.
+    right : bool (default: `True`)
+        Hide right axis spine if True.
+    top : bool (default: `True`)
+        Hide top axis spine if True.
+    """
+    
+    ax.spines["top"].set_visible(not top)
+    ax.spines["right"].set_visible(not right)
+    ax.spines["bottom"].set_visible(not bottom)
+    ax.spines["left"].set_visible(not left)
+    if bottom:
+        ax.tick_params(bottom=False, labelbottom=False)
+    if top:
+        ax.tick_params(top=False)
+    if left:
+        ax.tick_params(left=False, labelleft=False)
+    if right:
+        ax.tick_params(right=False)
