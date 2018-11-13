@@ -74,42 +74,59 @@ def get_components(eig_vals, eig_vecs, n_comp=2):
     return W
 
 ## -----------------
-class LDA():
+class MultiClassLDA():
     """
     source: https://github.com/eriklindernoren/ML-From-Scratch
+    Parameters:
+    -----------
+    solver: str
+        If 'svd' we use the pseudo-inverse to calculate the inverse of matrices
+        when doing the transformation.
     """
-    def __init__(self):
-        self.w = None
+    def __init__(self, solver="svd"):
+        self.solver = solver
 
-    def transform(self, X, y):
-        self.fit(X, y)
-        # Project data onto vector
-        X_transform = X.dot(self.w)
-        return X_transform
+    def _calculate_scatter_matrices(self, X, y):
+        
+        n_features = np.shape(X)[1]
+        labels = np.unique(y)
 
-    def fit(self, X, y):
-        # Separate data by class
-        X1 = X[y == 0]
-        X2 = X[y == 1]
+        # Within class scatter matrix:
+        # SW = sum{ (X_for_class - mean_of_X_for_class)^2 }
+        #   <=> (n_samples_X_for_class - 1) * covar(X_for_class)
+        SW = np.empty((n_features, n_features))
+        for label in labels:
+            _X = X[y == label]
+            SW += (len(_X) - 1) * calculate_covariance_matrix(_X)
 
-        # Calculate the covariance matrices of the two datasets
-        cov1 = calculate_covariance_matrix(X1)
-        cov2 = calculate_covariance_matrix(X2)
-        cov_tot = cov1 + cov2
+        # Between class scatter:
+        # SB = sum{ n_samples_for_class * (mean_for_class - total_mean)^2 }
+        total_mean = np.mean(X, axis=0)
+        SB = np.empty((n_features, n_features))
+        for label in labels:
+            _X = X[y == label]
+            _mean = np.mean(_X, axis=0)
+            SB += len(_X) * (_mean - total_mean).dot((_mean - total_mean).T)
 
-        # Calculate the mean of the two datasets
-        mean1 = X1.mean(0)
-        mean2 = X2.mean(0)
-        mean_diff = np.atleast_1d(mean1 - mean2)
+        return SW, SB
 
-        # Determine the vector which when X is projected onto it best separates the
-        # data by class. w = (mean1 - mean2) / (cov1 + cov2)
-        self.w = np.linalg.pinv(cov_tot).dot(mean_diff)
+    def transform(self, X, y, n_components):
+        
+        SW, SB = self._calculate_scatter_matrices(X, y)
 
-    def predict(self, X):
-        y_pred = []
-        for sample in X:
-            h = sample.dot(self.w)
-            y = 1 * (h < 0)
-            y_pred.append(y)
-        return y_pred
+        # Determine SW^-1 * SB by calculating inverse of SW
+        A = np.linalg.inv(SW).dot(SB)
+
+        # Get eigenvalues and eigenvectors of SW^-1 * SB
+        eigenvalues, eigenvectors = np.linalg.eigh(A)
+
+        # Sort the eigenvalues and corresponding eigenvectors from largest
+        # to smallest eigenvalue and select the first n_components
+        idx = eigenvalues.argsort()[::-1]
+        eigenvalues = eigenvalues[idx][:n_components]
+        eigenvectors = eigenvectors[:, idx][:, :n_components]
+
+        # Project the data onto eigenvectors
+        X_transformed = X.dot(eigenvectors)
+
+        return X_transformed
