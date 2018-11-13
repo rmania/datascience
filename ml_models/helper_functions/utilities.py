@@ -34,7 +34,7 @@ def check_valid_array(X, y, y_int=True):
         
 def remove_borders(ax, left=False, bottom=False, right=True, top=True):
     """Remove chart junk from matplotlib plots.
-    Parameters
+    Args
     ----------
     axes : fi. plt.subplots()
     left : bool (default: `False`)
