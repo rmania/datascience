@@ -57,7 +57,12 @@ def train_test_split(X, y, test_size=0.5, shuffle=True, seed=None):
     split_i = len(y) - int(len(y) // (1 / test_size))
     X_train, X_test = X[:split_i], X[split_i:]
     y_train, y_test = y[:split_i], y[split_i:]
-
+    
+    print ('X_train shape: {}'.format(X_train.shape))
+    print ('X_test shape: {}'.format(X_test.shape))
+    print ('y_train shape: {}'.format(y_train.shape))
+    print ('y_test shape: {}'.format(y_test.shape))
+    
     return X_train, X_test, y_train, y_test
 
 def make_diagonal(x):
