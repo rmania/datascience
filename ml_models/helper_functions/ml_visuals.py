@@ -70,7 +70,6 @@ def pprint_confusion_matrix(confusion_matrix, class_names, figsize = (10,7), fon
     return ax, cax
 
 
-
   
 def format_kwarg_dictionaries(default_kwargs=None, user_kwargs=None,
                               protected_keys=None):
