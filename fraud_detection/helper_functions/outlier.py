@@ -28,6 +28,7 @@ def outliers_iqr(series):
     iqr = quartile_3 - quartile_1
     lower_bound = quartile_1 - (iqr * 1.5)
     upper_bound = quartile_3 + (iqr * 1.5)
+    print (f'lower bound :{lower_bound}, upper bound: {upper_bound}')
     return np.where((series > upper_bound) | (series < lower_bound))
 
 
